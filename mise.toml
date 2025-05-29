@@ -1,0 +1,14 @@
+[env]
+PROJECT_NAME = "{{ config_root | basename }}"
+
+_.python.venv = {path = ".venv", create = true}
+
+[tasks.install]
+description = "Install dependencies"
+run = "pip install -r requirements.txt"
+
+[tasks.run]
+description = "Run the application"
+
+[tools]
+python = "system"
