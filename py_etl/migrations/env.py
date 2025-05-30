@@ -3,7 +3,6 @@ from logging.config import fileConfig
 
 from alembic import context
 from db import DB_URL, Base
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, engine_from_config, exc, pool, text
 
 # this is the Alembic Config object, which provides
@@ -33,20 +32,21 @@ def create_db_if_not_exists(url: str) -> None:
     db = url.split("/")[-1]
     try:
         engine = create_engine(url)
-        with engine.connect() as conn:
-            print(f"Database {db} already exists")
+        conn = engine.connect()
+        print(f"Database {db} already exists")
+        conn.close()
     except exc.OperationalError:
         print(f"Database {db} doesn't exists. Creating.")
-        load_dotenv()
         db_postgres = (
             "postgresql://{DB_ADMIN}:{DB_ADMIN_PASSWORD}@localhost/postgres".format(
                 **os.environ
             )
         )
         engine = create_engine(db_postgres)
-        with engine.connect() as conn:
-            conn.execute(text("commit"))
-            conn.execute(text(f"CREATE DATABASE {db};"))
+        conn = engine.connect()
+        conn.execute(text("commit"))
+        conn.execute(text(f"CREATE DATABASE {db};"))
+        conn.close()
 
 
 def run_migrations_offline() -> None:
