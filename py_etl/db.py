@@ -1,9 +1,8 @@
 import os
-from datetime import datetime
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import Column, DateTime, Float, Integer, create_engine
+from sqlalchemy.orm import DeclarativeMeta, registry
 
 load_dotenv()
 
@@ -13,17 +12,24 @@ DB_URL = (
     )
 )
 
-engine = create_engine(DB_URL, echo=True)
+engine = create_engine(DB_URL, echo=True, future=True)
+
+mapper_registry = registry()
 
 
-class Base(DeclarativeBase):
-    pass
+class Base(metaclass=DeclarativeMeta):
+    __abstract__ = True
+
+    registry = mapper_registry
+    metadata = mapper_registry.metadata
+
+    __init__ = mapper_registry.constructor
 
 
 class Crash(Base):
     __tablename__ = "crash"
 
-    crash_id: Mapped[int] = mapped_column(primary_key=True)
-    crash_date: Mapped[datetime]
-    latitude: Mapped[float]
-    longitude: Mapped[float]
+    crash_id = Column(Integer, primary_key=True)
+    crash_date = Column(DateTime)
+    latitude = Column(Float)
+    longitude = Column(Float)
