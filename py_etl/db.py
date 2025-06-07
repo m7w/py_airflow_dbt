@@ -1,7 +1,15 @@
 import os
 
 from dotenv import load_dotenv
-from sqlalchemy import Column, DateTime, Float, Integer, create_engine
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    create_engine,
+)
 from sqlalchemy.orm import DeclarativeMeta, registry
 
 load_dotenv()
@@ -33,3 +41,28 @@ class Crash(Base):
     crash_date = Column(DateTime)
     latitude = Column(Float)
     longitude = Column(Float)
+
+
+class Vehicle(Base):
+    __tablename__ = "vehicle"
+
+    unique_id = Column(Integer, primary_key=True)
+    crash_id = Column(Integer, ForeignKey("crash.crash_id"), nullable=False)
+    travel_direction = Column(String)
+    vehicle_occupants = Column(Integer)
+    driver_license_status = Column(String)
+    pre_crash = Column(String)
+    point_of_impact = Column(String)
+
+class Person(Base):
+    __tablename__ = "person"
+
+    unique_id = Column(Integer, primary_key=True)
+    crash_id = Column(Integer, ForeignKey("crash.crash_id"), nullable=False)
+    vehicle_id = Column(Integer, ForeignKey("vehicle.unique_id"))
+    person_type = Column(String)
+    person_injured = Column(String)
+    person_age = Column(Integer)
+    person_sex = Column(String)
+    safety_equipment = Column(String)
+    position_in_vehicle = Column(String)
