@@ -5,21 +5,21 @@ import pandas as pd
 SELECT_CRASHES_COLUMNS = ["crash_id", "crash_date", "latitude", "longitude"]
 
 RENAME_COLUMNS = {"collision_id": "crash_id"}
-TYPE_CRASHES_COLUMNS = {"crash_id": "int32", "latitude": "float", "longitude": "float"}
+TYPE_CRASHES_COLUMNS = {"crash_id": "Int32", "latitude": "float", "longitude": "float"}
 
 SELECT_VEHICLES_COLUMNS = [
     "unique_id",
     "crash_id",
     "travel_direction",
-    "vehicle_occupant",
-    "driver_licence_status",
+    "vehicle_occupants",
+    "driver_license_status",
     "pre_crash",
     "point_of_impact",
 ]
 TYPE_VEHICLES_COLUMNS = {
-    "unique_id": "int32",
-    "crash_id": "int32",
-    "vehicle_occupants": "int32",
+    "unique_id": "Int32",
+    "crash_id": "Int32",
+    "vehicle_occupants": "Int32",
 }
 
 SELECT_PERSONS_COLUMNS = [
@@ -27,18 +27,17 @@ SELECT_PERSONS_COLUMNS = [
     "crash_id",
     "vehicle_id",
     "person_type",
-    "person_injured",
+    "person_injury",
     "person_age",
     "person_sex",
     "safety_equipment",
     "position_in_vehicle",
 ]
 TYPE_PERSONS_COLUMNS = {
-    "unique_id": "int32",
-    "crash_id": "int32",
-    "vehicle_id": "int32",
-    "person_injured": "int32",
-    "person_age": "int32",
+    "unique_id": "Int32",
+    "crash_id": "Int32",
+    "vehicle_id": "Int32",
+    "person_age": "Int32",
 }
 
 
@@ -61,7 +60,7 @@ def transform_crashes_data(df: pd.DataFrame) -> pd.DataFrame:
     return transform_data(df, SELECT_CRASHES_COLUMNS, TYPE_CRASHES_COLUMNS, True)
 
 def transform_vehicles_data(df: pd.DataFrame) -> pd.DataFrame:
-    return transform_data(df, SELECT_VEHICLES_COLUMNS, TYPE_VEHICLES_COLUMNS, True)
+    return transform_data(df, SELECT_VEHICLES_COLUMNS, TYPE_VEHICLES_COLUMNS)
 
 def transform_persons_data(df: pd.DataFrame) -> pd.DataFrame:
-    return transform_data(df, SELECT_PERSONS_COLUMNS, TYPE_PERSONS_COLUMNS, True)
+    return transform_data(df, SELECT_PERSONS_COLUMNS, TYPE_PERSONS_COLUMNS)

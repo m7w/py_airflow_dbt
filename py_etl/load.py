@@ -1,8 +1,9 @@
 import pandas as pd
-from db import Base
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
+
+from .db import Base
 
 
 def load_data(df: pd.DataFrame, cls: type[Base], session: Session) -> None:

@@ -6,6 +6,7 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Identity,
     Integer,
     String,
     create_engine,
@@ -61,8 +62,17 @@ class Person(Base):
     crash_id = Column(Integer, ForeignKey("crash.crash_id"), nullable=False)
     vehicle_id = Column(Integer, ForeignKey("vehicle.unique_id"))
     person_type = Column(String)
-    person_injured = Column(String)
+    person_injury = Column(String)
     person_age = Column(Integer)
     person_sex = Column(String)
     safety_equipment = Column(String)
     position_in_vehicle = Column(String)
+
+class Status(Base):
+    __tablename__ = "etl_status"
+
+    id = Column(Integer, Identity(start=1), primary_key=True)
+    task_id = Column(String)
+    execution_date = Column(DateTime)
+    last_crash_date = Column(DateTime)
+    status = Column(String)
