@@ -1,6 +1,5 @@
 import os
 
-from dotenv import load_dotenv
 from sqlalchemy import (
     Column,
     DateTime,
@@ -12,8 +11,6 @@ from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy.orm import DeclarativeMeta, registry
-
-load_dotenv()
 
 DB_URL = (
     "postgresql+psycopg2://{DB_USER}:{DB_USER_PASSWORD}@localhost/{DB_NAME}".format(

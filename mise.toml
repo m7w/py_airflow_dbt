@@ -1,11 +1,17 @@
 [env]
 PROJECT_NAME = "{{ config_root | basename }}"
 
+PYTHONPATH = "{{ config_root }}"
+
+AIRFLOW_HOME = "{{ config_root }}/airflow"
+AIRFLOW__CORE__DAGS_FOLDER = "{{ config_root }}/dags"
+
 _.python.venv = {path = ".venv", create = true}
+_.file = ".env"
 
 [tasks.install]
 description = "Install dependencies"
-run = "pip install -r requirements.txt"
+run = "uv pip install -r requirements.txt"
 
 [tasks.run]
 description = "Run the application"
