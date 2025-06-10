@@ -5,6 +5,7 @@ from sqlalchemy import and_, func, select
 from sqlalchemy.orm import Session
 
 from airflow.providers.standard.operators.python import PythonOperator
+from airflow.providers.telegram.operators.telegram import TelegramOperator
 from airflow.sdk import DAG
 from py_etl.db import Crash, Person, Status, Vehicle, engine
 from py_etl.extract import extract_data
@@ -115,4 +116,23 @@ with DAG(
         task_id="person_task", python_callable=etl_person_pipeline
     )
 
-    date_task >> crash_task >> vehicle_task >> person_task
+    notify_tg_success = TelegramOperator(
+        task_id="notify_tg_success",
+        telegram_conn_id="TG_CONN_ID",
+        text="DAG {{ dag_run.dag_id }} finished with state SUCCESS",
+        trigger_rule="one_success",
+        dag=dag,
+    )
+
+    notify_tg_failed = TelegramOperator(
+        task_id="notify_tg_failed",
+        telegram_conn_id="TG_CONN_ID",
+        text="DAG {{ dag_run.dag_id }} finished with state FAILED",
+        trigger_rule="one_failed",
+        dag=dag,
+    )
+
+    date_task >> crash_task >> vehicle_task >> person_task # pyright: ignore[reportUnusedExpression]
+
+    person_task >> [notify_tg_success, notify_tg_failed] # pyright: ignore[reportUnusedExpression]
+
