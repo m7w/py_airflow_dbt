@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 import pytest
 from sqlalchemy import create_engine, func, select
@@ -18,16 +19,37 @@ def session():
     yield session
     session.close()
 
+
 def extract_data() -> pd.DataFrame:
     return pd.DataFrame(
         [
-            ["1", "2025-05-28T00:00:00.000", "1:40", "10", "5", "fake"],
-            ["2", "2025-05-29T00:00:00.000", "12:00", "-10", "NaN", "fake"],
+            [
+                "1",
+                "2025-05-28T00:00:00.000",
+                "1:40",
+                "BRONX",
+                "11222",
+                "10",
+                "5",
+                "fake",
+            ],
+            [
+                "2",
+                "2025-05-29T00:00:00.000",
+                "12:00",
+                np.nan,
+                np.nan,
+                "-10",
+                np.nan,
+                "fake",
+            ],
         ],
         columns=[
             "collision_id",
             "crash_date",
             "crash_time",
+            "borough",
+            "zip_code",
             "latitude",
             "longitude",
             "fake",
@@ -39,7 +61,7 @@ def test_py_pipeline(session) -> None:
     data = extract_data()
 
     data = transform_crashes_data(data)
-    assert len(data.columns) == 4
+    assert len(data.columns) == 6
 
     load_data(data, Crash, session)
 
@@ -49,5 +71,6 @@ def test_py_pipeline(session) -> None:
 
     assert count == 2
     assert crash.crash_date == datetime(2025, 5, 29, 12, 00)
+    assert crash.borough is None
+    assert crash.zip_code is None
     assert crash.longitude is None
-

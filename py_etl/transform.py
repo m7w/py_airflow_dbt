@@ -1,11 +1,12 @@
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 
-SELECT_CRASHES_COLUMNS = ["crash_id", "crash_date", "latitude", "longitude"]
+SELECT_CRASHES_COLUMNS = ["crash_id", "crash_date", "borough", "zip_code", "latitude", "longitude"]
 
 RENAME_COLUMNS = {"collision_id": "crash_id"}
-TYPE_CRASHES_COLUMNS = {"crash_id": "Int32", "latitude": "float", "longitude": "float"}
+TYPE_CRASHES_COLUMNS = {"crash_id": "Int32", "zip_code": "Int32", "latitude": "float", "longitude": "float"}
 
 SELECT_VEHICLES_COLUMNS = [
     "unique_id",
@@ -52,6 +53,7 @@ def transform_data(
     df = df.rename(columns=RENAME_COLUMNS)
     df = df.loc[:, select_columns]
     df = df.drop_duplicates()
+    df = df.replace({np.nan: None})
     df = df.astype(type_columns)
 
     return df

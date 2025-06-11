@@ -37,6 +37,8 @@ class Crash(Base):
 
     crash_id = Column(Integer, primary_key=True)
     crash_date = Column(DateTime)
+    borough = Column(String)
+    zip_code = Column(Integer)
     latitude = Column(Float)
     longitude = Column(Float)
 
