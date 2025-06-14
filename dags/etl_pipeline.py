@@ -120,7 +120,7 @@ with DAG(
         task_id="notify_tg_success",
         telegram_conn_id="TG_CONN_ID",
         text="DAG {{ dag_run.dag_id }} finished with state SUCCESS",
-        trigger_rule="one_success",
+        trigger_rule="all_success",
         dag=dag,
     )
 
@@ -132,7 +132,6 @@ with DAG(
         dag=dag,
     )
 
-    date_task >> crash_task >> vehicle_task >> person_task # pyright: ignore[reportUnusedExpression]
+    date_task >> crash_task >> vehicle_task >> person_task  # pyright: ignore[reportUnusedExpression]
 
-    person_task >> [notify_tg_success, notify_tg_failed] # pyright: ignore[reportUnusedExpression]
-
+    person_task >> [notify_tg_success, notify_tg_failed]  # pyright: ignore[reportUnusedExpression]
