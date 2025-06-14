@@ -20,7 +20,7 @@ CRASH_URL = "https://data.cityofnewyork.us/resource/h9gi-nx95.json"
 VEHICLE_URL = "https://data.cityofnewyork.us/resource/bm4k-52h4.json"
 PERSON_URL = "https://data.cityofnewyork.us/resource/f55k-p6yu.json"
 
-DATE_START_FROM = datetime(2025, 1, 1)
+DEFAULT_DATE_FROM = datetime(2025, 1, 1)
 
 
 def log(context, status):
@@ -51,14 +51,11 @@ def log_failure(context):
 def get_last_crash_date(**context):
     session = Session(engine)
     last_crash_date = session.scalars(
-        select(func.max(Status.last_crash_date)).where(
-            and_(Status.task_id == "person_task", Status.status == "success")
-        )
+        select(
+            func.coalesce(func.max(Status.last_crash_date), DEFAULT_DATE_FROM)
+        ).where(and_(Status.task_id == "person_task", Status.status == "success"))
     ).first()
-    if last_crash_date is not None:
-        context["ti"].xcom_push(key="last_crash_date", value=last_crash_date)
-    else:
-        context["ti"].xcom_push(key="last_crash_date", value=DATE_START_FROM)
+    context["ti"].xcom_push(key="last_crash_date", value=last_crash_date)
 
 
 def etl_crash_pipeline(**context):
