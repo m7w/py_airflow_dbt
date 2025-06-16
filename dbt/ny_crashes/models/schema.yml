@@ -1,0 +1,9 @@
+verion: 2
+
+models:
+  - name: stg_crash
+    columns:
+      - name: crash_id
+        tests:
+          - unique
+          - not_null

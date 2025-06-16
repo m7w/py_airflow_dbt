@@ -1,0 +1,24 @@
+name: ny_crashes
+version: 1.0.0
+profile: ny_crashes
+model-paths:
+  - models
+analysis-paths:
+  - analyses
+test-paths:
+  - tests
+seed-paths:
+  - seeds
+macro-paths:
+  - macros
+snapshot-paths:
+  - snapshots
+clean-targets: # directories to be removed by `dbt clean`
+  - target
+  - dbt_packages
+models:
+  ny_crashes:
+    marts:
+      +materialized: table
+    staging:
+      +materialized: view
