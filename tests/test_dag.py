@@ -12,7 +12,7 @@ def test_dag_loaded(dagbag):
     dag = dagbag.get_dag(dag_id="etl_pipeline")
     assert dagbag.import_errors == {}
     assert dag is not None
-    assert len(dag.tasks) == 6
+    assert len(dag.tasks) == 8
 
 
 def assert_dag_dict_equal(source, dag):
@@ -29,7 +29,9 @@ def test_dag_structure(dagbag):
             "get_last_crash_date_task": ["crash_task"],
             "crash_task": ["vehicle_task"],
             "vehicle_task": ["person_task"],
-            "person_task": ["notify_tg_success", "notify_tg_failed"],
+            "person_task": ["run_dbt_task"],
+            "run_dbt_task": ["test_dbt_task"],
+            "test_dbt_task": ["notify_tg_success", "notify_tg_failed"],
             "notify_tg_success": [],
             "notify_tg_failed": []
         },

@@ -4,6 +4,7 @@ import pandas as pd
 from sqlalchemy import and_, func, select
 from sqlalchemy.orm import Session
 
+from airflow.providers.standard.operators.bash import BashOperator
 from airflow.providers.standard.operators.python import PythonOperator
 from airflow.providers.telegram.operators.telegram import TelegramOperator
 from airflow.sdk import DAG
@@ -21,6 +22,8 @@ VEHICLE_URL = "https://data.cityofnewyork.us/resource/bm4k-52h4.json"
 PERSON_URL = "https://data.cityofnewyork.us/resource/f55k-p6yu.json"
 
 DEFAULT_DATE_FROM = datetime(2025, 1, 1)
+
+DBT_PROJECT_PATH = "../dbt/ny_crashes"
 
 
 def log(context, status):
@@ -113,6 +116,18 @@ with DAG(
         task_id="person_task", python_callable=etl_person_pipeline
     )
 
+    run_dbt_task = BashOperator(
+        task_id="run_dbt_task",
+        cwd="{{ task.dag.folder }}",
+        bash_command=f"cd {DBT_PROJECT_PATH} && dbt run",
+    )
+
+    test_dbt_task = BashOperator(
+        task_id="test_dbt_task",
+        cwd="{{ task.dag.folder }}",
+        bash_command=f"cd {DBT_PROJECT_PATH} && dbt test",
+    )
+
     notify_tg_success = TelegramOperator(
         task_id="notify_tg_success",
         telegram_conn_id="TG_CONN_ID",
@@ -131,4 +146,6 @@ with DAG(
 
     date_task >> crash_task >> vehicle_task >> person_task  # pyright: ignore[reportUnusedExpression]
 
-    person_task >> [notify_tg_success, notify_tg_failed]  # pyright: ignore[reportUnusedExpression]
+    person_task >> run_dbt_task >> test_dbt_task  # pyright: ignore[reportUnusedExpression]
+
+    test_dbt_task >> [notify_tg_success, notify_tg_failed]  # pyright: ignore[reportUnusedExpression]
